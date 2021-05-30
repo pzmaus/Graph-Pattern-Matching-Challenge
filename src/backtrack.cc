@@ -8,7 +8,7 @@
 Backtrack::Backtrack() {}
 Backtrack::~Backtrack() {}
 
-void backtrack(const Graph &query, const Graph &data, std::vector<std::vector<Vertex>> &query_dag, const CandidateSet &cs, Vertex cur, std::vector<int> &u_visited, std::vector<bool> &v_visited, std::set<Vertex> &extendable, std::vector<Vertex> &candidates) {
+int backtrack(const Graph &query, const Graph &data, std::vector<std::vector<Vertex>> &query_dag, const CandidateSet &cs, Vertex cur, std::vector<int> &u_visited, std::vector<bool> &v_visited, std::set<Vertex> &extendable, std::vector<Vertex> &candidates, int count) {
   // get extendable 'u's
   extendable.erase(cur);
   std::vector<Vertex> inserted;
@@ -39,6 +39,8 @@ void backtrack(const Graph &query, const Graph &data, std::vector<std::vector<Ve
         std::cout << ' ' << u_visited[u];
       }
       std::cout << '\n';
+      count++;
+      if(count >= 100000) exit(0);
       u_visited[cur] = -1;
       v_visited[cand] = false;
       continue;
@@ -105,7 +107,7 @@ void backtrack(const Graph &query, const Graph &data, std::vector<std::vector<Ve
     // std::cout << "- - next u : " << min_u << '\n';
 
     // travel next node
-    backtrack(query, data, query_dag, cs, min_u, u_visited, v_visited, extendable, min_final_v);
+    count = backtrack(query, data, query_dag, cs, min_u, u_visited, v_visited, extendable, min_final_v, count);
 
     // restore u, v visited
     u_visited[cur] = -1;
@@ -117,6 +119,8 @@ void backtrack(const Graph &query, const Graph &data, std::vector<std::vector<Ve
   for(Vertex v : inserted) {
     extendable.erase(v);
   }
+
+  return count;
 }
 
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
@@ -193,5 +197,6 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
     candidates.push_back(cand);
   }
 
-  backtrack(query, data, adj, cs, root, u_visited, v_visited, extendable, candidates);
+  int count = 0;
+  backtrack(query, data, adj, cs, root, u_visited, v_visited, extendable, candidates, count);
 }
