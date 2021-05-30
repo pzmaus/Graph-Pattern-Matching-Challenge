@@ -8,7 +8,8 @@
 Backtrack::Backtrack() {}
 Backtrack::~Backtrack() {}
 
-void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_dag[], const CandidateSet &cs, Vertex cur, std::vector<int> &u_visited, std::vector<bool> &v_visited, std::set<Vertex> &extendable, std::vector<Vertex> &candidates) {
+void backtrack(const Graph &query, const Graph &data, std::vector<std::vector<Vertex>> &query_dag, const CandidateSet &cs, Vertex cur, std::vector<int> &u_visited, std::vector<bool> &v_visited, std::set<Vertex> &extendable, std::vector<Vertex> &candidates) {
+  // get extendable 'u's
   extendable.erase(cur);
   std::vector<Vertex> inserted;
   for(Vertex next : query_dag[cur]) {
@@ -26,10 +27,12 @@ void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_
   // std::cout << '\n';
 
   for(Vertex cand : candidates) {
-    // std::cout << "- selected candidate : " << cand << '\n';      
+    // std::cout << "- selected candidate : " << cand << '\n';
+
     u_visited[cur] = cand;
     v_visited[cand] = true;
 
+    // print embedding
     if(extendable.empty()) {
       std::cout << 'a';
       for(Vertex u = 0; u < query.GetNumVertices(); u++) {
@@ -41,10 +44,12 @@ void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_
       continue;
     }
 
+    // u to extend and its candidates
     Vertex min_u = -1;
     std::vector<Vertex> min_final_v;
 
     for(Vertex u_next : extendable) {
+      // get neighbors of u_next which are visited
       std::vector<Vertex> connected;
       size_t startOffset = query.GetNeighborStartOffset(u_next);
       size_t endOffset = query.GetNeighborEndOffset(u_next);
@@ -62,6 +67,7 @@ void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_
       // }
       // std::cout << '\n';
 
+      // get candidates of u_next
       std::vector<Vertex> v_next;
       size_t candSize = cs.GetCandidateSize(u_next);
       for(size_t i = 0; i < candSize; i++) {
@@ -69,6 +75,7 @@ void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_
         v_next.push_back(cand);
       }
 
+      // for candidate 'v's, check if it is connected with connectedU's 'v' -> final_v
       std::vector<Vertex> final_v;
       for(Vertex v : v_next) {
         bool check = true;
@@ -80,6 +87,7 @@ void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_
         }
         if(check) final_v.push_back(v);
       }
+
       // std::cout << "- - - final_v : ";
       // for(Vertex c : final_v) {
       //   std::cout << c << ' ';
@@ -87,6 +95,7 @@ void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_
       // std::cout << '\n';
 
 
+      // next u to travel = has min size final_v
       if(min_u == -1 || final_v.size() < min_final_v.size()) {
         min_u = u_next;
         min_final_v = final_v;
@@ -94,12 +103,16 @@ void backtrack(const Graph &query, const Graph &data, std::vector<Vertex> query_
     }
 
     // std::cout << "- - next u : " << min_u << '\n';
+
+    // travel next node
     backtrack(query, data, query_dag, cs, min_u, u_visited, v_visited, extendable, min_final_v);
 
+    // restore u, v visited
     u_visited[cur] = -1;
     v_visited[cand] = false;
   }
 
+  // restore extendable
   extendable.insert(cur);
   for(Vertex v : inserted) {
     extendable.erase(v);
@@ -125,12 +138,13 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
     }
   }
 
-  // bfs query graph
-  std::vector<Vertex> adj[100000];
-  bool visited[100000], letsmakeadj[100000];
+  // bfs query graph & make dag
+  std::vector<std::vector<Vertex>> adj;
+  adj.resize(numU);
+  std::vector<bool> visited, letsmakeadj;
   for(Vertex u = 0; u < numU; u++) {
-    visited[u] = false;
-    letsmakeadj[u] = false;
+    visited.push_back(false);
+    letsmakeadj.push_back(false);
   }
 
   std::queue<Vertex> q;
@@ -162,11 +176,10 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
     std::cout << '\n';
   }*/
 
-
-
-  std::vector<int> u_visited;
+  // initial values for backtrack
+  std::vector<int> u_visited; // -1 : not visited, else, matched v
   for(Vertex u = 0; u < numU; u++) u_visited.push_back(-1);
-  std::vector<bool> v_visited;
+  std::vector<bool> v_visited;  // is v occupied
   size_t numV = data.GetNumVertices();
   for(Vertex v = 0; v < numV; v++) v_visited.push_back(false);
 
