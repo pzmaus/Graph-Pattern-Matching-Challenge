@@ -1,0 +1,5 @@
+/mnt/c/Users/Nyso/Desktop/graph_pattern_matching/algorithm202105_assignment2/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Nyso/Desktop/graph_pattern_matching/algorithm202105_assignment2/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Nyso/Desktop/graph_pattern_matching/algorithm202105_assignment2/build/main/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Nyso/Desktop/graph_pattern_matching/algorithm202105_assignment2/build/main/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Nyso/Desktop/graph_pattern_matching/algorithm202105_assignment2/build/main/CMakeFiles/program.dir
