@@ -69,12 +69,12 @@ int backtrack(const Graph &query, const Graph &data, std::vector<std::vector<Ver
       // }
       // std::cout << '\n';
 
-      // get candidates of u_next
+      // get candidates of u_next which are not used yet
       std::vector<Vertex> v_next;
       size_t candSize = cs.GetCandidateSize(u_next);
       for(size_t i = 0; i < candSize; i++) {
         Vertex cand = cs.GetCandidate(u_next, i);
-        v_next.push_back(cand);
+        if(!v_visited[cand]) v_next.push_back(cand);
       }
 
       // for candidate 'v's, check if it is connected with connectedU's 'v' -> final_v
